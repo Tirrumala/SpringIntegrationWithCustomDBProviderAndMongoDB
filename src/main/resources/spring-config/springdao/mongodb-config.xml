@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+          classpath:spring-context-3.0.xsd
+          http://www.springframework.org/schema/data/mongo
+          classpath:spring-mongo-1.1.xsd
+          http://www.springframework.org/schema/beans
+          classpath:spring-beans-3.0.xsd
+          http://www.springframework.org/schema/jee
+          classpath:spring-jee-3.1.xsd">
+
+	<mongo:db-factory id="mongoBigDataFactory" dbname="${mongodb.database.name}"
+		host="${mongodb.host}" password="${mongodb.password}" port="${mongodb.port}"
+		username="${mongodb.username}" />
+
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoBigDataFactory" />
+	</bean>
+
+	<bean id="jndiPropertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<bean class="org.springframework.core.io.FileSystemResource">
+					<constructor-arg>
+						<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+							<property name="jndiName" value="java:comp/env/mongoDBPropFile" />
+							<property name="resourceRef" value="false" />
+						</bean>
+					</constructor-arg>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+</beans>
